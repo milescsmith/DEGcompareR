@@ -1,0 +1,34 @@
+Package: DEGcompareR
+Type: Package
+Title: Find, plot, and write differentially expressed genes within groups of a Seurat object
+Version: 0.1.0
+Authors@R: person("Miles", "Smith", email = "miles-smith@omrf.org", role = c("aut", "cre"))
+Maintainer: Miles Smith <miles-smith@omrf.org>
+Description: Given a Seurat object with cells that have multiple grouping variables (i.e. 
+  multiple cell types and multiple drug treatments or time points), identify intragroup 
+  differentially expressed genes (DEGs.  Also provides functions for plotting said DEGs
+  or writing the list of DEGs to a file
+URL: https://github.com/milescsmith/DEGcompareR
+Depends: R (>= 3.5.0),
+  gtools,
+  tibble,
+  dplyr,
+  rlang,
+  Seurat,
+  gridExtra,
+  ggplot2,
+  cowplot,
+  future,
+  future.apply,
+  stringr,
+  glue,
+  data.table,
+  seuratBubblePlot,
+  plyr,
+  magrittr
+Remotes:
+  milescsmith/seuratBubblePlot
+License: BSD 3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.1.0
