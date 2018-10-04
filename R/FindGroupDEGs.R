@@ -111,7 +111,7 @@ FindGroupDEGs <- function(seuratObj,
             object = compareObj,
             ident.1 = unique_idents[[1]],
             ident.2 = unique_idents[[2]],
-            test.use = test.use
+            test.use = test_use
           ) %>%
             rownames_to_column("gene") %>%
             dplyr::filter((!!pval_use) < pval_thresh) %>%
