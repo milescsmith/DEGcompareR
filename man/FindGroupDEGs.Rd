@@ -5,8 +5,9 @@
 \title{FindGroupDEGs}
 \usage{
 FindGroupDEGs(seuratObj, ident_use, compare_by, test_use = "wilcox",
-  pval_thresh = 0.05, genes_of_interest = NULL,
-  cell_number_thresh = 10, pval_use = p_val_adj)
+  min_fold_change = 0, min_pct_express_diff = 0, pval_thresh = 0.05,
+  genes_of_interest = NULL, cell_number_thresh = 10,
+  pval_use = p_val_adj)
 }
 \arguments{
 \item{seuratObj}{Processed Seurat scRNAseq object}
@@ -20,6 +21,11 @@ identity for comparison.}
 \item{test_use}{Differential expression test to use.  Same values as in
 FindMarkers/FindAllMarkers (i.e wilcox, MAST, DESeq2, ...). Default:
 'wilcox'}
+
+\item{min_fold_change}{Minimum log fold change difference between two groups}
+
+\item{min_pct_express_diff}{Minimum difference in the percentage of each group
+that expresses the gene in question above a threshold}
 
 \item{pval_thresh}{Signifigance cutoff for DE testing. Default: 0.05}
 

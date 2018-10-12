@@ -1,7 +1,7 @@
 Package: DEGcompareR
 Type: Package
 Title: Find, plot, and write differentially expressed genes within groups of a Seurat object
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: person("Miles", "Smith", email = "miles-smith@omrf.org", role = c("aut", "cre"))
 Maintainer: Miles Smith <miles-smith@omrf.org>
 Description: Given a Seurat object with cells that have multiple grouping variables (i.e. 
@@ -25,7 +25,8 @@ Depends: R (>= 3.5.0),
   data.table,
   seuratBubblePlot,
   plyr,
-  magrittr
+  magrittr,
+  purrr
 Remotes:
   milescsmith/seuratBubblePlot
 License: BSD 3

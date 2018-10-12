@@ -9,6 +9,9 @@
 #'   which to group the cells.
 #' @param compare_by Meta.data column by which to group the cells within each
 #'   identity for comparison.
+#' @param min_fold_change Minimum log fold change difference between two groups
+#' @param min_pct_express_diff Minimum difference in the percentage of each group
+#'   that expresses the gene in question above a threshold
 #' @param test_use Differential expression test to use.  Same values as in
 #'   FindMarkers/FindAllMarkers (i.e wilcox, MAST, DESeq2, ...). Default:
 #'   'wilcox'
@@ -37,6 +40,8 @@ FindGroupDEGs <- function(seuratObj,
                           ident_use,
                           compare_by,
                           test_use = "wilcox",
+                          min_fold_change = 0,
+                          min_pct_express_diff = 0,
                           pval_thresh = 0.05,
                           genes_of_interest = NULL,
                           cell_number_thresh = 10,
@@ -83,7 +88,9 @@ FindGroupDEGs <- function(seuratObj,
                 ) %>%
                   rownames_to_column("gene") %>%
                   dplyr::filter((!!pval_use) < pval_thresh) %>%
-                  dplyr::filter(gene %in% genes_of_interest)
+                  dplyr::filter(gene %in% genes_of_interest) %>%
+                  dplyr::filter(abs(avg_logFC) >= min_fold_change) %>%
+                  dplyr::filter(abs(pct.1 - pct.2) >= min_pct_express_diff)
                 if (nrow(marks) > 0){
                   marks
                 } else {
@@ -115,7 +122,9 @@ FindGroupDEGs <- function(seuratObj,
           ) %>%
             rownames_to_column("gene") %>%
             dplyr::filter((!!pval_use) < pval_thresh) %>%
-            dplyr::filter(gene %in% genes_of_interest)
+            dplyr::filter(gene %in% genes_of_interest) %>%
+            dplyr::filter(abs(avg_logFC) >= min_fold_change) %>%
+            dplyr::filter(abs(pct.1 - pct.2) >= min_pct_express_diff)
           combo_names <- glue("{identity} {unique_idents[[1]]} vs {unique_idents[[2]]}")
           names(combo_DEs) <- combo_names
           combo_DEs <- combo_DEs[!sapply(combo_DEs, is.null)]
