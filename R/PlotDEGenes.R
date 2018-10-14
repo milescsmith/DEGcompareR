@@ -32,6 +32,7 @@ PlotDEGenes <- function(seuratObj,
                         group_by = "celltype",
                         compare_by = "class",
                         gene_annotation_df = NULL,
+                        split_if = NULL,
                         ...) {
     seuratObj <- SetAllIdent(seuratObj, group_by)
   # for each cell type
@@ -70,17 +71,31 @@ PlotDEGenes <- function(seuratObj,
             annotated_gene_list <- FALSE
           }
 
-          bubbleplot(
-            celltypeObj,
-            genes_plot = common_genes,
-            x_axis_title = str_wrap(x, 20),
-            y_axis_title = NULL,
-            do_return = TRUE,
-            pct_legend_title = "Percent\ngroup\nexpressing",
-            scale_legend_title = "Average\nscaled\nexpression",
-            annotated_gene_list = annotated_gene_list,
-            ...
-          )
+
+          bp <- bubbleplot(
+                            celltypeObj,
+                            genes_plot = common_genes,
+                            x_axis_title = str_wrap(x, 20),
+                            y_axis_title = NULL,
+                            do_return = TRUE,
+                            pct_legend_title = "Percent\ngroup\nexpressing",
+                            scale_legend_title = "Average\nscaled\nexpression",
+                            annotated_gene_list = annotated_gene_list,
+                            ...
+                          )
+          if(!is.null(split_if) & (length(common_genes) > split_if)){
+            d <- length(unique(bp$data$genes_plot))
+            split_groups <- rep(1:ceiling(d/20), each = split_length)[1:length(unique(bp$data$genes_plot))]
+            split_table <-  data.frame('genes' = unique(bp$data$genes_plot),
+                                       'split_group' = split_groups)
+
+            alpha$data$split_groups <- mapvalues(x = bp$data$genes_plot,
+                                                 from = split_table$genes,
+                                                 to = split_table$split_group)
+            bp + facet_grid(.~split_group, scales = "free") + theme(strip.text = element_none())
+          } else {
+            bp
+          }
         } else {
           print(glue("No genes to plot for {x} were found."))
         }

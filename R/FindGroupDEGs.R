@@ -2,7 +2,9 @@
 #'
 #' @description Find differentially expressed genes within an identity
 #'   contrasted by a grouping variable (e.g. comparison between disease status
-#'   or drug treatment (i.e. compare_by) within each cell type (i.e. ident_use)
+#'   or drug treatment (i.e. compare_by) within each cell type (i.e. ident_use).
+#'   Performs 1-to-1 comparisons for each possible of combinations of the values
+#'   of the grouping variable.
 #'
 #' @param seuratObj Processed Seurat scRNAseq object
 #' @param ident_use Identity (from the ident slot or a meta.data column) by

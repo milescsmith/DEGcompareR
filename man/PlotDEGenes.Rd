@@ -5,7 +5,8 @@
 \title{PlotDEGenes}
 \usage{
 PlotDEGenes(seuratObj, combo_list, group_by = "celltype",
-  compare_by = "class", gene_annotation_df = NULL, ...)
+  compare_by = "class", gene_annotation_df = NULL, split_if = NULL,
+  ...)
 }
 \arguments{
 \item{seuratObj}{Processed Seurat scRNAseq object}
