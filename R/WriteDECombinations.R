@@ -9,8 +9,6 @@
 #' @return
 #' @export
 #'
-#' @import magrittr
-#' @importFrom future plan multiprocess
 #' @importFrom future.apply future_lapply
 #' @importFrom stringr str_sub str_replace_all
 #' @importFrom glue glue
@@ -18,7 +16,6 @@
 #'
 #' @examples
 WriteFindGroupDEGs <- function(combo_list, location) {
-  plan(multiprocess)
   if (!str_sub(location, -1) == "/") {
     location <- glue("{location}/")
   }

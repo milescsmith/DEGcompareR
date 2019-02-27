@@ -4,12 +4,12 @@
 \alias{PlotDEGenes}
 \title{PlotDEGenes}
 \usage{
-PlotDEGenes(seuratObj, combo_list, group_by = "celltype",
+PlotDEGenes(object, combo_list, group_by = "celltype",
   compare_by = "class", gene_annotation_df = NULL, split_if = NULL,
   ...)
 }
 \arguments{
-\item{seuratObj}{Processed Seurat scRNAseq object}
+\item{object}{Processed Seurat scRNAseq object}
 
 \item{combo_list}{Differentially expressed gene list for combination of
 contrast factors from FindGroupDEGs}

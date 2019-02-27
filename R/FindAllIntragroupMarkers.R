@@ -4,7 +4,7 @@
 #'   contrasted by a grouping variable (e.g. comparison between disease status
 #'   or drug treatment (i.e. compare_by) within each cell type (i.e. ident_use)
 #'
-#' @param seuratObj Processed Seurat scRNAseq object
+#' @param object Processed Seurat scRNAseq object
 #' @param ident_use Identity (from the ident slot or a meta.data column) by
 #'   which to group the cells.
 #' @param compare_by Meta.data column by which to group the cells within each
@@ -27,16 +27,14 @@
 #' @examples
 #'
 #' @export
-#' @import magrittr
 #' @importFrom gtools combinations
 #' @importFrom glue glue
-#' @importFrom future plan multiprocess
 #' @importFrom future.apply future_lapply
-#' @importFrom Seurat SubsetData SetAllIdent FindMarkers
+#' @importFrom Seurat SubsetData Idents FindMarkers
 #' @importFrom tibble rownames_to_column
 #' @importFrom dplyr filter
 #' @importFrom rlang enquo
-FindAllIntragroupMarkers <- function(seuratObj,
+FindAllIntragroupMarkers <- function(object,
                                      ident_use,
                                      compare_by,
                                      test_use = "wilcox",
@@ -46,41 +44,35 @@ FindAllIntragroupMarkers <- function(seuratObj,
                                      genes_of_interest = NULL,
                                      cell_number_thresh = 10,
                                      pval_use = p_val_adj) {
-  plan(multiprocess)
   if (is.null(genes_of_interest)) {
-    genes_of_interest <- rownames(seuratObj@raw.data)
+    genes_of_interest <- rownames(object)
   }
   combinations_results <-
     future_lapply(
-      X = unique(seuratObj@meta.data[, ident_use]),
+      X = unique(object[[ident_use]]),
       FUN = function(identity) {
-        compareObj <- SubsetData(
-          object = seuratObj,
-          subset.name = ident_use,
-          accept.value = identity,
-          subset.raw = TRUE
-        )
+        compareObj <- SubsetData(object = object,
+                                 subset.name = ident_use,
+                                 accept.value = identity)
 
-        compareObj <- SetAllIdent(compareObj, compare_by)
+        Idents(compareObj) <- compareObj[[compare_by]]
 
-        unique_idents <- as.character(unique(compareObj@ident))
+        unique_idents <- Idents(compareObj) %>% unique() %>% as.character()
         print(glue("Now processing {identity}"))
-
-
 
         combo_DEs <- FindAllMarkers(object = compareObj,
                                     genes.use = genes_of_interest,
                                     logfc.threshold = min_fold_change,
                                     test.use = test_use,
                                     min.diff.pct = min_pct_express_diff,
-                                    min.cells.group = cell_number_thresh,,
+                                    min.cells.group = cell_number_thresh,
                                     print.bar = TRUE,
                                     only.pos = TRUE,
                                     return.thresh = pval_thresh)
         combo_DEs <- combo_DEs[!sapply(combo_DEs, is.null)]
         combo_DEs
       })
-  names(combinations_results) <- unique(seuratObj@meta.data[, ident_use])
+  names(combinations_results) <- object[[ident_use]] %>% unique()
   combinations_results <- combinations_results[!sapply(combinations_results, is.null)]
   return(combinations_results)
 }

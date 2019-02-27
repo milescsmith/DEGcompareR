@@ -4,13 +4,13 @@
 \alias{FindAllIntragroupMarkers}
 \title{FindAllIntragroupMarkers}
 \usage{
-FindAllIntragroupMarkers(seuratObj, ident_use, compare_by,
+FindAllIntragroupMarkers(object, ident_use, compare_by,
   test_use = "wilcox", min_fold_change = 0, min_pct_express_diff = 0,
   pval_thresh = 0.05, genes_of_interest = NULL,
   cell_number_thresh = 10, pval_use = p_val_adj)
 }
 \arguments{
-\item{seuratObj}{Processed Seurat scRNAseq object}
+\item{object}{Processed Seurat scRNAseq object}
 
 \item{ident_use}{Identity (from the ident slot or a meta.data column) by
 which to group the cells.}

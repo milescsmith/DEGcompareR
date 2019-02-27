@@ -4,11 +4,11 @@
 \alias{PlotSplitGroupDEGs}
 \title{PlotSplitGroupDEGs}
 \usage{
-PlotSplitGroupDEGs(seuratObj, combo_list, group_by = "celltype",
+PlotSplitGroupDEGs(object, combo_list, group_by = "celltype",
   compare_by = "class", ...)
 }
 \arguments{
-\item{seuratObj}{Processed Seurat scRNAseq object}
+\item{object}{Processed Seurat scRNAseq object}
 
 \item{combo_list}{List of list of differentially expressed genes from DEcombinations}
 

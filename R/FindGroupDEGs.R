@@ -6,7 +6,7 @@
 #'   Performs 1-to-1 comparisons for each possible of combinations of the values
 #'   of the grouping variable.
 #'
-#' @param seuratObj Processed Seurat scRNAseq object
+#' @param object Processed Seurat scRNAseq object
 #' @param ident_use Identity (from the ident slot or a meta.data column) by
 #'   which to group the cells.
 #' @param compare_by Meta.data column by which to group the cells within each
@@ -29,16 +29,15 @@
 #' @examples
 #'
 #' @export
-#' @import magrittr
 #' @importFrom gtools combinations
 #' @importFrom glue glue
-#' @importFrom future plan multiprocess
-#' @importFrom future.apply future_lapply
-#' @importFrom Seurat SubsetData SetAllIdent FindMarkers
+#' @importFrom Seurat SubsetData Idents FindMarkers
 #' @importFrom tibble rownames_to_column
 #' @importFrom dplyr filter
+#' @importFrom purrr pluck map
+#' @importFrom furrr future_map2
 #' @importFrom rlang enquo
-FindGroupDEGs <- function(seuratObj,
+FindGroupDEGs <- function(object,
                           ident_use,
                           compare_by,
                           test_use = "wilcox",
@@ -49,50 +48,42 @@ FindGroupDEGs <- function(seuratObj,
                           cell_number_thresh = 10,
                           pval_use = p_val_adj) {
   pval_use <- enquo(pval_use)
-  plan(multiprocess)
   if (is.null(genes_of_interest)) {
-    genes_of_interest <- rownames(seuratObj@raw.data)
+    genes_of_interest <- rownames(object)
   }
   combinations_results <-
-    future_lapply(
-      X = unique(seuratObj@meta.data[, ident_use]),
-      FUN = function(identity) {
-        compareObj <- SubsetData(
-          object = seuratObj,
-          subset.name = ident_use,
-          accept.value = identity,
-          subset.raw = TRUE
-        )
+    future_map(
+      .x = unique(object[[ident_use]][[1]]),
+      .progress = TRUE,
+      .f = function(identity) {
+        compareObj <- SubsetData(object = object,
+                                 subset.name = ident_use,
+                                 accept.value = identity)
+        Idents(compareObj) <- compareObj[[compare_by]]
 
-        compareObj <- SetAllIdent(compareObj, compare_by)
-
-        unique_idents <- as.character(unique(compareObj@ident))
+        unique_idents <- Idents(compareObj) %>% unique() %>% as.character()
         print(glue("Now processing {identity}"))
 
         if ((length(unique_idents) > 2)) {
-          combos <- combinations(
-            n = length(unique_idents),
-            r = 2,
-            v = unique_idents,
-            repeats.allowed = FALSE
-          )
+          combos <- combinations(n = length(unique_idents),
+                                 r = 2,
+                                 v = unique_idents,
+                                 repeats.allowed = FALSE)
 
-          combo_DEs <- future_lapply(
-            X = 1:nrow(combos),
-            FUN = function(combo_row) {
-              if (all(table(compareObj@ident) >= cell_number_thresh)) {
+          combo_DEs <- future_map(
+            .x = 1:nrow(combos),
+            .f = function(combo_row) {
+              if (all(table(Idents(compareObj)) >= cell_number_thresh)) {
                 print(glue("Now processing {identity} {combos[combo_row, 1]} {combos[combo_row, 2]}"))
-                marks <- FindMarkers(
-                  object = compareObj,
-                  ident.1 = combos[combo_row, 1],
-                  ident.2 = combos[combo_row, 2],
-                  test.use = test_use
-                ) %>%
+                marks <- FindMarkers(object = compareObj,
+                                     ident.1 = combos[combo_row, 1],
+                                     ident.2 = combos[combo_row, 2],
+                                     test.use = test_use) %>%
                   rownames_to_column("gene") %>%
-                  dplyr::filter((!!pval_use) < pval_thresh) %>%
-                  dplyr::filter(gene %in% genes_of_interest) %>%
-                  dplyr::filter(abs(avg_logFC) >= min_fold_change) %>%
-                  dplyr::filter(abs(pct.1 - pct.2) >= min_pct_express_diff)
+                  filter((!!pval_use) < pval_thresh) %>%
+                  filter(gene %in% genes_of_interest) %>%
+                  filter(abs(avg_logFC) >= min_fold_change) %>%
+                  filter(abs(pct.1 - pct.2) >= min_pct_express_diff)
                 if (nrow(marks) > 0){
                   marks
                 } else {
@@ -103,10 +94,10 @@ FindGroupDEGs <- function(seuratObj,
             }
           )
 
-          combo_names <- unlist(future_lapply(
-            X = 1:nrow(combos),
-            FUN = function(x) {
-              if (all(table(compareObj@ident) >= cell_number_thresh)) {
+          combo_names <- unlist(future_map(
+            .x = 1:nrow(combos),
+            .f = function(x) {
+              if (all(table(Idents(compareObj)) >= cell_number_thresh)) {
                 glue("{identity} {combos[x, 1]} vs {combos[x, 2]}")
               }
             }
@@ -115,18 +106,16 @@ FindGroupDEGs <- function(seuratObj,
           combo_DEs <- combo_DEs[!sapply(combo_DEs, is.null)]
           combo_DEs
         } else if ((length(unique_idents) == 2) &
-          all(table(compareObj@ident) >= cell_number_thresh)) {
-          combo_DEs <- FindMarkers(
-            object = compareObj,
-            ident.1 = unique_idents[[1]],
-            ident.2 = unique_idents[[2]],
-            test.use = test_use
-          ) %>%
+          all(table(Idents(compareObj)) >= cell_number_thresh)) {
+          combo_DEs <- FindMarkers(object = compareObj,
+                                   ident.1 = unique_idents[[1]],
+                                   ident.2 = unique_idents[[2]],
+                                   test.use = test_use) %>%
             rownames_to_column("gene") %>%
-            dplyr::filter((!!pval_use) < pval_thresh) %>%
-            dplyr::filter(gene %in% genes_of_interest) %>%
-            dplyr::filter(abs(avg_logFC) >= min_fold_change) %>%
-            dplyr::filter(abs(pct.1 - pct.2) >= min_pct_express_diff)
+            filter((!!pval_use) < pval_thresh) %>%
+            filter(gene %in% genes_of_interest) %>%
+            filter(abs(avg_logFC) >= min_fold_change) %>%
+            filter(abs(pct.1 - pct.2) >= min_pct_express_diff)
           combo_names <- glue("{identity} {unique_idents[[1]]} vs {unique_idents[[2]]}")
           names(combo_DEs) <- combo_names
           combo_DEs <- combo_DEs[!sapply(combo_DEs, is.null)]
@@ -134,7 +123,9 @@ FindGroupDEGs <- function(seuratObj,
         }
       }
     )
-  names(combinations_results) <- unique(seuratObj@meta.data[, ident_use])
+
+  print(object[[ident_use]] %>% unique() %>% pluck(1) %>% as.character())
+  names(combinations_results) <- object[[ident_use]] %>% unique() %>% pluck(1) %>% as.character()
   combinations_results <- combinations_results[!sapply(combinations_results, is.null)]
   return(combinations_results)
 }
