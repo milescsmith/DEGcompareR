@@ -38,7 +38,7 @@ PlotDEGenes <- function(object,
     names(combo_list),
     function(x) {
       if (length(combo_list[x][[1]]) > 0) {
-        print(glue("Now plotting: {x}"))
+        message(glue("Now plotting: {x}"))
         celltypeObj <- SubsetData(object,
                                   ident.use = x)
         Idents(celltypeObj) <- celltypeObj[[compare_by]]
@@ -89,7 +89,7 @@ PlotDEGenes <- function(object,
             bp
           }
         } else {
-          print(glue("No genes to plot for {x} were found."))
+          message(glue("No genes to plot for {x} were found."))
         }
       }
     }
