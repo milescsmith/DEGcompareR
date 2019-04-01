@@ -58,7 +58,7 @@ FindAllIntragroupMarkers <- function(object,
         Idents(compareObj) <- compareObj[[compare_by]]
 
         unique_idents <- Idents(compareObj) %>% unique() %>% as.character()
-        print(glue("Now processing {identity}"))
+        message(glue("Now processing {identity}"))
 
         combo_DEs <- FindAllMarkers(object = compareObj,
                                     genes.use = genes_of_interest,
