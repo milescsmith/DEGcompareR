@@ -34,7 +34,7 @@ PlotSplitGroupDEGs <- function(object,
     function(x) {
       if (length(combo_list[x][[1]]) > 0) {
         # for each class comparison
-        print(glue("Now plotting: {x}"))
+        message(glue("Now plotting: {x}"))
         celltypeObj <- SubsetData(object,
                                   ident.use = x)
         Idents(celltypeObj) <- celltypeObj[[compare_by]]
