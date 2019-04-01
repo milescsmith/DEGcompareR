@@ -62,7 +62,7 @@ FindGroupDEGs <- function(object,
         Idents(compareObj) <- compareObj[[compare_by]]
 
         unique_idents <- Idents(compareObj) %>% unique() %>% as.character()
-        print(glue("Now processing {identity}"))
+        message(glue("Now processing {identity}"))
 
         if ((length(unique_idents) > 2)) {
           combos <- combinations(n = length(unique_idents),
@@ -74,7 +74,7 @@ FindGroupDEGs <- function(object,
             .x = 1:nrow(combos),
             .f = function(combo_row) {
               if (all(table(Idents(compareObj)) >= cell_number_thresh)) {
-                print(glue("Now processing {identity} {combos[combo_row, 1]} {combos[combo_row, 2]}"))
+                message(glue("Now processing {identity} {combos[combo_row, 1]} {combos[combo_row, 2]}"))
                 marks <- FindMarkers(object = compareObj,
                                      ident.1 = combos[combo_row, 1],
                                      ident.2 = combos[combo_row, 2],
@@ -124,7 +124,7 @@ FindGroupDEGs <- function(object,
       }
     )
 
-  print(object[[ident_use]] %>% unique() %>% pluck(1) %>% as.character())
+  message(object[[ident_use]] %>% unique() %>% pluck(1) %>% as.character())
   names(combinations_results) <- object[[ident_use]] %>% unique() %>% pluck(1) %>% as.character()
   combinations_results <- combinations_results[!sapply(combinations_results, is.null)]
   return(combinations_results)
