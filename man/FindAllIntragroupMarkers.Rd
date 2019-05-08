@@ -19,7 +19,7 @@ which to group the cells.}
 identity for comparison.}
 
 \item{test_use}{Differential expression test to use.  Same values as in
-FindMarkers/FindAllMarkers (i.e wilcox, MAST, DESeq2, ...). Default:
+FindAllMarkers (i.e wilcox, MAST, DESeq2, ...). Default:
 'wilcox'}
 
 \item{min_fold_change}{Minimum log fold change difference between two groups}
@@ -42,9 +42,6 @@ Named list with genes
 }
 \description{
 Find differentially expressed genes within an identity
-  contrasted by a grouping variable (e.g. comparison between disease status
-  or drug treatment (i.e. compare_by) within each cell type (i.e. ident_use)
-}
-\examples{
-
+contrasted by a grouping variable (e.g. comparison between disease status
+or drug treatment (i.e. compare_by) within each cell type (i.e. ident_use)
 }

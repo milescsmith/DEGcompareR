@@ -26,16 +26,14 @@
 #'
 #' @return Named list with genes
 #'
-#' @examples
-#'
 #' @export
 #' @importFrom gtools combinations
 #' @importFrom glue glue
-#' @importFrom Seurat SubsetData Idents FindMarkers
+#' @importFrom Seurat SubsetData Idents Idents<- FindMarkers
 #' @importFrom tibble rownames_to_column
 #' @importFrom dplyr filter
 #' @importFrom purrr pluck map
-#' @importFrom furrr future_map2
+#' @importFrom furrr future_map
 #' @importFrom rlang enquo
 FindGroupDEGs <- function(object,
                           ident_use,
@@ -47,6 +45,12 @@ FindGroupDEGs <- function(object,
                           genes_of_interest = NULL,
                           cell_number_thresh = 10,
                           pval_use = p_val_adj) {
+  p_val_adj <- NULL
+  gene <- NULL
+  avg_logFC <- NULL
+  pct.1 <- NULL
+  pct.2 <- NULL
+
   pval_use <- enquo(pval_use)
   if (is.null(genes_of_interest)) {
     genes_of_interest <- rownames(object)

@@ -20,7 +20,11 @@ Default: celltype}
 \item{compare_by}{Group variable to use when comparing the cells.
 Default: class.}
 
-\item{...}{Extra arguments to pass to seuratBubblePlot::bubbleplot()}
+\item{gene_annotation_df}{Dataframe containing}
+
+\item{split_if}{If the number of features is above this amount, facet the plot. Default: NULL}
+
+\item{...}{Extra arguments to pass to SeuratBubblePlot::bubbleplot()}
 }
 \value{
 ggplot2 object

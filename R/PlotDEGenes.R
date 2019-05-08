@@ -1,25 +1,29 @@
-#' PlotDEGenes
+#' @title PlotDEGenes
 #'
-#' Using a bubbleplot, plot genes that are differentially expressed between
+#' @description Using a bubbleplot, plot genes that are differentially expressed between
 #' cells of a comparison group within a grouping (i.e. DEGs between different
 #' disease groups within the same cell type).  The results of all intragroup
 #' comparisons are compiled together and plotted together on one bubbleplot.
 #'
 #' @param object Processed Seurat scRNAseq object
 #' @param combo_list Differentially expressed gene list for combination of
-#'   contrast factors from FindGroupDEGs
+#' contrast factors from FindGroupDEGs
 #' @param group_by Group variable within which to examine the cells.
-#'   Default: celltype
+#' Default: celltype
 #' @param compare_by Group variable to use when comparing the cells.
-#'   Default: class.
-#' @param ... Extra arguments to pass to seuratBubblePlot::bubbleplot()
+#' Default: class.
+#' @param gene_annotation_df Dataframe containing
+#' @param split_if If the number of features is above this amount, facet the plot. Default: NULL
+#' @param ... Extra arguments to pass to SeuratBubblePlot::bubbleplot()
 #'
 #' @importFrom glue glue
-#' @importFrom Seurat SubsetData Idents
+#' @importFrom Seurat SubsetData Idents<-
 #' @importFrom future.apply future_lapply
-#' @importFrom seuratBubblePlot bubbleplot
+#' @importFrom SeuratBubblePlot bubbleplot
 #' @importFrom stringr str_wrap
-#' @importFrom plyr mapvalues
+#' @importFrom dplyr recode pull
+#' @importFrom HGNChelper checkGeneSymbols
+#' @importFrom ggplot2 facet_grid theme element_blank
 #'
 #' @return ggplot2 object
 #' @export PlotDEGenes
@@ -32,6 +36,8 @@ PlotDEGenes <- function(object,
                         gene_annotation_df = NULL,
                         split_if = NULL,
                         ...) {
+  Suggested.Symbol <- NULL
+
   Idents(object) <- object[[group_by]]
   # for each cell type
   opl <- lapply(
@@ -50,9 +56,12 @@ PlotDEGenes <- function(object,
           if (!is.null(gene_annotation_df)) {
             common_genes %<>% as.data.frame()
             colnames(common_genes) <- "genes"
-            common_genes$annotations <- mapvalues(x = common_genes[["genes"]],
-                                                  from = gene_annotation_df[["genes"]],
-                                                  to = gene_annotation_df[["annotations"]])
+
+            annotations <- gene_annotation_df[["annotations"]]
+            names(annotations) <- gene_annotation_df[["genes"]]
+
+            common_genes$annotations <- recode(common_genes[["genes"]],
+                                               !!!annotations)
             annotated_gene_list <- TRUE
           } else {
             annotated_gene_list <- FALSE
@@ -76,14 +85,15 @@ PlotDEGenes <- function(object,
           if (!is.null(split_if)){
             if (length(common_genes) > split_if){
               d <- bp$data$genes_plot %>% unique() %>% length()
-              split_groups <- rep(1:ceiling(d/20), each = split_length)[1:d]
+              split_groups <- rep(1:ceiling(d/20), each = split_if)[1:d]
               split_table <-  data.frame('genes' = unique(bp$data$genes_plot),
                                          'split_group' = split_groups)
 
-              alpha$data$split_groups <- mapvalues(x = bp$data$genes_plot,
-                                                   from = split_table[["genes"]],
-                                                   to = split_table[["split_group"]])
-              bp + facet_grid(.~split_group, scales = "free") + theme(strip.text = element_none())
+              new_split_group <- split_table[["split_group"]]
+              names(new_split_group) <- split_table[["genes"]]
+              alpha$data$split_groups <- recode(bp$data$genes_plot,
+                                                   !!!new_split_group)
+              bp + facet_grid(.~split_group, scales = "free") + theme(strip.text = element_blank())
             }
           } else {
             bp

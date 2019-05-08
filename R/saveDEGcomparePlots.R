@@ -9,7 +9,7 @@
 #'   that is "eps", "ps", "tex" (pictex), "pdf", "jpeg", "tiff", "png",
 #'   "bmp", "svg" or "wmf".  Default = png
 #'
-#' @importFrom ggplot2 ggsave
+#' @importFrom ggplot2 ggsave coord_flip
 #' @importFrom glue glue
 #' @importFrom purrr map
 #'

@@ -15,8 +15,8 @@
 #' @export PlotSplitGroupDEGs
 #'
 #' @importFrom glue glue
-#' @importFrom Seurat Idents SubsetData
-#' @importFrom seuratBubblePlot bubbleplot
+#' @importFrom Seurat Idents<- SubsetData
+#' @importFrom SeuratBubblePlot bubbleplot
 #' @importFrom gridExtra grid.arrange arrangeGrob
 #' @importFrom ggplot2 theme
 #' @importFrom cowplot get_legend

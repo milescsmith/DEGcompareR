@@ -47,6 +47,3 @@ Find differentially expressed genes within an identity
   Performs 1-to-1 comparisons for each possible of combinations of the values
   of the grouping variable.
 }
-\examples{
-
-}

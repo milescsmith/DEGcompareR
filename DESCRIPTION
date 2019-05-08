@@ -1,36 +1,43 @@
-Package: DEGcompareR
 Type: Package
-Title: Find, plot, and write differentially expressed genes within groups of a Seurat object
+Package: DEGcompareR
+Title: Find, plot, and write differentially expressed genes
+    within groups of a Seurat object
 Version: 0.2.0
-Authors@R: person("Miles", "Smith", email = "miles-smith@omrf.org", role = c("aut", "cre"))
+Authors@R: 
+    person(given = "Miles",
+           family = "Smith",
+           role = c("aut", "cre"),
+           email = "miles-smith@omrf.org")
 Maintainer: Miles Smith <miles-smith@omrf.org>
-Description: Given a Seurat object with cells that have multiple grouping variables (i.e. 
-  multiple cell types and multiple drug treatments or time points), identify intragroup 
-  differentially expressed genes (DEGs.  Also provides functions for plotting said DEGs
-  or writing the list of DEGs to a file
+Description: Given a Seurat object with cells that have multiple
+    grouping variables (i.e.  multiple cell types and multiple drug
+    treatments or time points), identify intragroup differentially
+    expressed genes (DEGs.  Also provides functions for plotting said DEGs
+    or writing the list of DEGs to a file.
+License: BSD_3_clause + file LICENSE
 URL: https://github.com/milescsmith/DEGcompareR
-Depends: R (>= 3.5.0),
-  gtools,
-  tibble,
-  dplyr,
-  rlang,
-  Seurat,
-  gridExtra,
-  ggplot2,
-  cowplot,
-  future,
-  future.apply,
-  stringr,
-  glue,
-  data.table,
-  SeuratBubblePlot,
-  plyr,
-  magrittr,
-  purrr,
-  furrr
+Depends: 
+    R (>= 3.5.0)
+Imports:
+    cowplot,
+    data.table,
+    dplyr,
+    furrr,
+    future.apply,
+    ggplot2,
+    glue,
+    gridExtra,
+    gtools,
+    HGNChelper,
+    magrittr,
+    purrr,
+    rlang,
+    Seurat,
+    SeuratBubblePlot,
+    stringr,
+    tibble
 Remotes:
-  milescsmith/SeuratBubblePlot
-License: BSD 3
+    milescsmith/SeuratBubblePlot
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
