@@ -23,13 +23,13 @@ Depends: R (>= 3.5.0),
   stringr,
   glue,
   data.table,
-  seuratBubblePlot,
+  SeuratBubblePlot,
   plyr,
   magrittr,
   purrr,
   furrr
 Remotes:
-  milescsmith/seuratBubblePlot
+  milescsmith/SeuratBubblePlot
 License: BSD 3
 Encoding: UTF-8
 LazyData: true
